@@ -1,0 +1,33 @@
+# ======================================================================
+#  FILE:  $URL$
+# ======================================================================
+#  PROJECT:             :  @PROJECT@
+#  VERSION              :  @VERION@
+#  LANGUAGE             :  CMake script
+#  AUTHOR               :  @AUTHOR@
+#  COPYRIGHT            :  @COPYRIGHT@
+#  COMPILER             :  cmake version 3.0.2
+#  CREATED              :  @CREATED@
+#  CLASS                :  -
+#  LAST MODIFIED        :  @LASTMODIFIED@
+#  GENERATED FROM MODEL :  -
+#  ORIGINAL MODEL AUTHOR:  -
+# ----------------------------------------------------------------------
+#  @DESCRIPTION@
+# ----------------------------------------------------------------------
+#  HISTORY
+#  $History$
+# ======================================================================
+
+cmake_minimum_required(VERSION 3.0.2)
+
+project(@PROJECT@)
+
+include($ENV{ESROCOS_CMAKE})
+
+#uncomment if you want to add dependencies for the build process
+#esrocos_add_dependency("DEPENDENCY_NAME")
+
+#uncomment if you want to add dependencies for the build process
+#esrocos_install_dependency_info()
+
