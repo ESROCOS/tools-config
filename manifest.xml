@@ -1,0 +1,6 @@
+<package>
+    <description brief="ESROCOS command line tools">
+        templates and environment variables for esrocos
+    </description>
+    <author>Benjamin Kisliuk</author>
+</package>
