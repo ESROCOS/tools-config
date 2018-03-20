@@ -39,9 +39,9 @@ Autoproj.env_set 'CPATH', "$AUTOPROJ_CURRENT_ROOT/install/include"
 default_python3_user_base = `env -i python3 -m site --user-site`.chop
 Autoproj.env_set 'PYTHONPATH', default_python3_user_base
 
-Autoproj.env_set 'ESROCOS_TEMPLATES', ENV["AUTOPROJ_CURRENT_ROOT"]+"/autoproj/templates"
+Autoproj.env_set 'ESROCOS_TEMPLATES', ENV["AUTOPROJ_CURRENT_ROOT"]+"/install/templates"
 
-Autoproj.env_set 'ESROCOS_CMAKE', ENV["AUTOPROJ_CURRENT_ROOT"]+"/autoproj/esrocos.cmake"
+Autoproj.env_set 'ESROCOS_CMAKE', ENV["AUTOPROJ_CURRENT_ROOT"]+"/install/cmake_macros/esrocos.cmake"
 
 def esrocos_package(name, workspace: Autoproj.workspace)
     package_common(:cmake, name, workspace: workspace) do |pkg|
