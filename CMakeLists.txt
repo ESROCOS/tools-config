@@ -9,6 +9,6 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/cmake_modules/
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake_modules/)
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/cmake_macros/
-	DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake_modules/)
+	DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake_macros/)
 
 message(STATUS "installed tools")
