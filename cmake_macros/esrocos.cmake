@@ -1,5 +1,5 @@
 # Additional CMake modules for ESROCOS 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/cmake_modules")
 
 # PkgConfig
 INCLUDE(FindPkgConfig)
