@@ -28,6 +28,6 @@ include($ENV{ESROCOS_CMAKE})
 #uncomment if you want to add dependencies for the build process
 #esrocos_add_dependency("DEPENDENCY_NAME")
 
-#uncomment if you want to add dependencies for the build process
-#esrocos_install_dependency_info()
+#needs to be included even if there are no dependencies
+esrocos_install_dependency_info()
 
