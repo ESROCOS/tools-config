@@ -2,7 +2,7 @@
 #  FILE:  $URL$
 # ======================================================================
 #  PROJECT:             :  @PROJECT@
-#  VERSION              :  @VERION@
+#  VERSION              :  @VERSION@
 #  LANGUAGE             :  CMake script
 #  AUTHOR               :  @AUTHOR@
 #  COPYRIGHT            :  @COPYRIGHT@
@@ -20,14 +20,7 @@
 # ======================================================================
 
 cmake_minimum_required(VERSION 3.0.2)
-
-project(@PROJECT@)
-
-include($ENV{ESROCOS_CMAKE})
-
-#uncomment if you want to add dependencies for the build process
-#esrocos_add_dependency("DEPENDENCY_NAME")
-
-#needs to be included even if there are no dependencies
-esrocos_install_dependency_info()
-
+find_package (esrocos)
+set(ROCK_TEST_ENABLED OFF)
+esrocos_init(@PROJECT@ @VERSION@)
+esrocos_standard_layout()
