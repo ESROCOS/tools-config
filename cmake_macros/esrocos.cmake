@@ -35,7 +35,7 @@ function(esrocos_export_pkg-config_info)
   SET(VERSION ${esrocos_export_pkg-config_info_VERSION})
   SET(PKG_CONFIG_CFLAGS ${esrocos_export_pkg-config_info_CFLAGS})
   SET(PKG_CONFIG_LIBS ${esrocos_export_pkg-config_info_LIBS})
-  SET(PKG_CONFIG_LIBS_STATIC ${esrocos_export_pkg-config_info_STATIC_LIBS}
+  SET(PKG_CONFIG_LIBS_STATIC ${esrocos_export_pkg-config_info_STATIC_LIBS})
 
   CONFIGURE_FILE(
     "${CMAKE_INSTALL_PREFIX}/templates/pkg-config-template.pc.in"
