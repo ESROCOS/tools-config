@@ -1,9 +1,49 @@
 # Additional CMake modules for ESROCOS 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/cmake_modules")
 
+#PKGCONFIG ENV
+set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/")
+
 # PkgConfig
 INCLUDE(FindPkgConfig)
-set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/")
+
+
+function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
+
+  add_custom_target(create_install_dir ALL 
+                  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
+
+  add_custom_target(create_zip ALL
+                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_SOURCE_DIR}/${EXPORT_FUNCTION}.zip" "--format=zip" "${CMAKE_SOURCE_DIR}/${EXPORT_FUNCTION}"
+                  DEPENDS create_install_dir)
+
+  install(FILES       ${CMAKE_SOURCE_DIR}/${EXPORT_FUNCTION}.zip ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
+
+endfunction(esrocos_export_function)
+
+
+function(esrocos_export_pkg-config_info)
+  set(oneValueArgs DESCRIPTION VERSION)
+  set(multiValueArgs REQUIRES LIBS STATIC_LIBS CFLAGS)
+
+  cmake_parse_arguments(MY_INSTALL "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+  SET(PROJECT_NAME ${CMAKE_PROJECT_NAME})
+  SET(PKG_CONFIG_REQUIRES ${esrocos_export_pkg-config_info_REQUIRE})
+  SET(DESCRIPTION ${esrocos_export_pkg-config_info_DESCRIPTION})
+  SET(VERSION ${esrocos_export_pkg-config_info_VERSION})
+  SET(PKG_CONFIG_CFLAGS ${esrocos_export_pkg-config_info_CFLAGS})
+  SET(PKG_CONFIG_LIBS ${esrocos_export_pkg-config_info_LIBS})
+  SET(PKG_CONFIG_LIBS_STATIC ${esrocos_export_pkg-config_info_STATIC_LIBS}
+
+  CONFIGURE_FILE(
+    "${CMAKE_INSTALL_PREFIX}/templates/pkg-config-template.pc.in"
+    "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/${CMAKE_PROJECT_NAME}.pc"
+  )
+endfunction(esrocos_export_pkg-config_info)
+
+# GENERATE LINKINGS INFO 
 set(WRITE_OUT "libs:")
   
 function(esrocos_add_dependency REQ_MODULE)
