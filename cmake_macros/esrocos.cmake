@@ -14,10 +14,10 @@ function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
                   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
 
   add_custom_target(create_zip ALL
-                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_SOURCE_DIR}/${EXPORT_FUNCTION}.zip" "--format=zip" "${CMAKE_SOURCE_DIR}/${EXPORT_FUNCTION}"
+                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_SOURCE_DIR}/${INSTALL_DIR}.zip" "--format=zip" "${CMAKE_SOURCE_DIR}/${INSTALL_DIR}"
                   DEPENDS create_install_dir)
 
-  install(FILES       ${CMAKE_SOURCE_DIR}/${EXPORT_FUNCTION}.zip ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
+  install(FILES       ${CMAKE_SOURCE_DIR}/${INSTALL_DIR}.zip ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
           DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
 
 endfunction(esrocos_export_function)
