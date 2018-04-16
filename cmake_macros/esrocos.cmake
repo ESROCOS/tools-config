@@ -7,17 +7,17 @@ set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/")
 # PkgConfig
 INCLUDE(FindPkgConfig)
 
-
 function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
 
   add_custom_target(create_install_dir ALL 
                   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
-
   add_custom_target(create_zip ALL
-                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_SOURCE_DIR}/${FUNCTION_DIR}.zip" "--format=zip" "${CMAKE_SOURCE_DIR}/${FUNCTION_DIR}"
+                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/${FUNCTION_DIR}.zip" "--format=zip" "."
+		  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${FUNCTION_DIR}
                   DEPENDS create_install_dir)
 
-  install(FILES       ${CMAKE_SOURCE_DIR}/${FUNCTION_DIR}.zip ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
+  install(FILES ${CMAKE_BINARY_DIR}/${FUNCTION_DIR}.zip
+                ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
           DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
 
 endfunction(esrocos_export_function)
@@ -298,4 +298,3 @@ function(esrocos_pkgconfig_dependency TAR)
         endif()
     endforeach()
 endfunction(esrocos_pkgconfig_dependency)
-
