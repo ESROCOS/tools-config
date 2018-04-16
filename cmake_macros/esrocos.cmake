@@ -51,8 +51,15 @@ function(esrocos_export_pkg-config_info)
 endfunction(esrocos_export_pkg-config_info)
 
 function(esrocos_build_project)
-  execute_process(COMMAND esrocos_build_project
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+ 
+  add_custom_target(
+    build_project ALL
+    COMMAND esrocos_build_project 
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    DEPENDS init_esrocos
+    USES_TERMINAL 
+  ) 
+
 endfunction(esrocos_build_project)
  
 function(esrocos_add_dependency REQ_MODULE)
