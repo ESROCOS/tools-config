@@ -1,11 +1,19 @@
-# Additional CMake modules for ESROCOS 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/cmake_modules")
+macro(esrocos_init)
+  # Additional CMake modules for ESROCOS 
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/cmake_modules")
 
-#PKGCONFIG ENV
-set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/")
+  #PKGCONFIG ENV
+  set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/")
 
-# PkgConfig
-INCLUDE(FindPkgConfig)
+  # PkgConfig
+  INCLUDE(FindPkgConfig)
+ 
+  install(FILES noopfile
+          DESTINATION noopfile
+          OPTIONAL)
+
+  add_custom_target(init_esrocos ALL)
+endmacro(esrocos_init)
 
 function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
 
@@ -21,7 +29,6 @@ function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
           DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
 
 endfunction(esrocos_export_function)
-
 
 function(esrocos_export_pkg-config_info)
   set(oneValueArgs DESCRIPTION VERSION)
@@ -43,10 +50,14 @@ function(esrocos_export_pkg-config_info)
   )
 endfunction(esrocos_export_pkg-config_info)
 
+function(esrocos_build_project)
+  execute_process(COMMAND esrocos_build_project
+                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endfunction(esrocos_build_project)
+ 
+function(esrocos_add_dependency REQ_MODULE)
 # GENERATE LINKINGS INFO 
 set(WRITE_OUT "libs:")
-  
-function(esrocos_add_dependency REQ_MODULE)
   
   pkg_check_modules(LINK_LIBS REQUIRED ${REQ_MODULE})
 
@@ -77,21 +88,11 @@ function(esrocos_add_dependency REQ_MODULE)
 
   endforeach(LIB)
 
-  set(WRITE_OUT "${WRITE_OUT}\n${LOCAL_WO}" PARENT_SCOPE)
+  set(WRITE_OUT "${WRITE_OUT}\n${LOCAL_WO}")
+
+  file(APPEND ${CMAKE_BINARY_DIR}/linkings.yml ${WRITE_OUT})
 
 endfunction(esrocos_add_dependency)
-
-
-function(esrocos_install_dependency_info)
-
-  message(${WRITE_OUT})
-
-  file(WRITE ${CMAKE_BINARY_DIR}/linkings.yml ${WRITE_OUT})
-
-  install(FILES ${CMAKE_BINARY_DIR}/linkings.yml
-  DESTINATION ${CMAKE_SOURCE_DIR}/)
-
-endfunction(esrocos_install_dependency_info)	
 
 # CMake function to build an ASN.1 types package in ESROCOS
 #
