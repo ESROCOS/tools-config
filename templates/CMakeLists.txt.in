@@ -19,21 +19,22 @@
 #  $History$
 # ======================================================================
 
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.2)
 
 project(@PROJECT@)
 
 include($ENV{ESROCOS_CMAKE})
 
+#required function call to set up esrocos
+esrocos_init()
 
 ########### FOR INTEGRATION PROJECTS ##############
 
 #uncomment if you want to add dependencies for the build process (only required in integration projects)
 #esrocos_add_dependency("DEPENDENCY_NAME")
 
-#needs to be included even if there are no dependencies
-esrocos_install_dependency_info()
-
+#uncomment if you want your project to be build via taste build-script
+#esrocos_build_project()
 
 ########### FOR COMPONENT PROJECTS ################
 

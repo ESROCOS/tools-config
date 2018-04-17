@@ -51,14 +51,19 @@ function(esrocos_export_pkg-config_info)
 endfunction(esrocos_export_pkg-config_info)
 
 function(esrocos_build_project)
- 
-  add_custom_target(
-    build_project ALL
-    COMMAND esrocos_build_project 
+
+add_custom_target(ESROCOS_BUILD_PROJECT ALL)
+
+add_dependencies(ESROCOS_BUILD_PROJECT init_esrocos)
+
+add_custom_command(
+    TARGET ESROCOS_BUILD_PROJECT 
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+    ARGS -P ${CMAKE_INSTALL_PREFIX}/cmake_macros/build_project.cmake
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    DEPENDS init_esrocos
-    USES_TERMINAL 
-  ) 
+)
+
 
 endfunction(esrocos_build_project)
  
