@@ -5,6 +5,8 @@ macro(esrocos_init)
   #PKGCONFIG ENV
   set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/")
 
+  file(WRITE ${CMAKE_BINARY_DIR}/linkings.yml "")
+
   # PkgConfig
   INCLUDE(FindPkgConfig)
  
@@ -67,42 +69,42 @@ add_custom_command(
 
 endfunction(esrocos_build_project)
  
-function(esrocos_add_dependency REQ_MODULE)
-# GENERATE LINKINGS INFO 
-set(WRITE_OUT "libs:")
+function(esrocos_add_dependency)
+  set(oneValueArgs PARTITION)
+  set(multiValueArgs MODULES)
+
+  cmake_parse_arguments(esrocos_add_dependency "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+  set(LOCAL_WO "${esrocos_add_dependency_PARTITION}:")
   
-  pkg_check_modules(LINK_LIBS REQUIRED ${REQ_MODULE})
+  foreach(MODULE ${esrocos_add_dependency_MODULES})
 
-  set(LOCAL_WO "")
+    pkg_check_modules(LINK_LIBS REQUIRED ${MODULE})
 
-  foreach(LIB ${LINK_LIBS_STATIC_LIBRARIES})
+    foreach(LIB ${LINK_LIBS_STATIC_LIBRARIES})
    
-    set(NOT_INCLUDED TRUE)
-    foreach(DIR ${LINK_LIBS_STATIC_LIBRARY_DIRS})
-      if(EXISTS "${DIR}/lib${LIB}.a") 
-        set(LOCAL_WO "${LOCAL_WO}\n- ${DIR}/lib${LIB}.a")
-        set(NOT_INCLUDED FALSE)
-      elseif(EXISTS "${DIR}/lib${LIB}.so") 
-        set(LOCAL_WO "${LOCAL_WO}\n- ${DIR}/lib${LIB}.so")
-        set(NOT_INCLUDED FALSE)
+      set(NOT_INCLUDED TRUE)
+      foreach(DIR ${LINK_LIBS_STATIC_LIBRARY_DIRS})
+        if(EXISTS "${DIR}/lib${LIB}.a") 
+          set(LOCAL_WO "${LOCAL_WO}\n- ${DIR}/lib${LIB}.a")
+          set(NOT_INCLUDED FALSE)
+        elseif(EXISTS "${DIR}/lib${LIB}.so") 
+          set(LOCAL_WO "${LOCAL_WO}\n- ${DIR}/lib${LIB}.so")
+          set(NOT_INCLUDED FALSE)
+        endif()   
+      endforeach(DIR)
+
+      if(${NOT_INCLUDED})
+        find_library(FOUND ${LIB})
+        if(EXISTS ${FOUND})
+          set(LOCAL_WO "${LOCAL_WO}\n- ${FOUND}" )
+        endif()
+        unset (FOUND CACHE)
       endif()
+    endforeach(LIB)
+  endforeach(MODULE)
 
-      
-    endforeach(DIR)
-
-    if(${NOT_INCLUDED})
-      find_library(FOUND ${LIB})
-      if(EXISTS ${FOUND})
-        set(LOCAL_WO "${LOCAL_WO}\n- ${FOUND}" )
-      endif()
-      unset (FOUND CACHE)
-    endif()
-
-  endforeach(LIB)
-
-  set(WRITE_OUT "${WRITE_OUT}\n${LOCAL_WO}")
-
-  file(APPEND ${CMAKE_BINARY_DIR}/linkings.yml ${WRITE_OUT})
+  file(APPEND ${CMAKE_BINARY_DIR}/linkings.yml ${LOCAL_WO})
 
 endfunction(esrocos_add_dependency)
 
