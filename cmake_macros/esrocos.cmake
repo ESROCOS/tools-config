@@ -1,27 +1,34 @@
-# Additional CMake modules for ESROCOS 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/cmake_modules")
+macro(esrocos_init)
+  # Additional CMake modules for ESROCOS 
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/cmake_modules")
 
-#PKGCONFIG ENV
-set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/")
+  #PKGCONFIG ENV
+  set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/")
 
-# PkgConfig
-INCLUDE(FindPkgConfig)
+  # PkgConfig
+  INCLUDE(FindPkgConfig)
+ 
+  install(FILES noopfile
+          DESTINATION noopfile
+          OPTIONAL)
 
+  add_custom_target(init_esrocos ALL)
+endmacro(esrocos_init)
 
 function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
 
   add_custom_target(create_install_dir ALL 
                   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
-
   add_custom_target(create_zip ALL
-                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_SOURCE_DIR}/${EXPORT_FUNCTION}.zip" "--format=zip" "${CMAKE_SOURCE_DIR}/${EXPORT_FUNCTION}"
+                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/${FUNCTION_DIR}.zip" "--format=zip" "${FUNCTION_DIR}"
+		  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                   DEPENDS create_install_dir)
 
-  install(FILES       ${CMAKE_SOURCE_DIR}/${EXPORT_FUNCTION}.zip ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
+  install(FILES ${CMAKE_BINARY_DIR}/${FUNCTION_DIR}.zip
+                ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
           DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
 
 endfunction(esrocos_export_function)
-
 
 function(esrocos_export_pkg-config_info)
   set(oneValueArgs DESCRIPTION VERSION)
@@ -35,7 +42,7 @@ function(esrocos_export_pkg-config_info)
   SET(VERSION ${esrocos_export_pkg-config_info_VERSION})
   SET(PKG_CONFIG_CFLAGS ${esrocos_export_pkg-config_info_CFLAGS})
   SET(PKG_CONFIG_LIBS ${esrocos_export_pkg-config_info_LIBS})
-  SET(PKG_CONFIG_LIBS_STATIC ${esrocos_export_pkg-config_info_STATIC_LIBS}
+  SET(PKG_CONFIG_LIBS_STATIC ${esrocos_export_pkg-config_info_STATIC_LIBS})
 
   CONFIGURE_FILE(
     "${CMAKE_INSTALL_PREFIX}/templates/pkg-config-template.pc.in"
@@ -43,10 +50,25 @@ function(esrocos_export_pkg-config_info)
   )
 endfunction(esrocos_export_pkg-config_info)
 
+function(esrocos_build_project)
+
+add_custom_target(ESROCOS_BUILD_PROJECT ALL)
+
+add_dependencies(ESROCOS_BUILD_PROJECT init_esrocos)
+
+add_custom_command(
+    TARGET ESROCOS_BUILD_PROJECT 
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+    ARGS -P ${CMAKE_INSTALL_PREFIX}/cmake_macros/build_project.cmake
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+
+endfunction(esrocos_build_project)
+ 
+function(esrocos_add_dependency REQ_MODULE)
 # GENERATE LINKINGS INFO 
 set(WRITE_OUT "libs:")
-  
-function(esrocos_add_dependency REQ_MODULE)
   
   pkg_check_modules(LINK_LIBS REQUIRED ${REQ_MODULE})
 
@@ -77,21 +99,11 @@ function(esrocos_add_dependency REQ_MODULE)
 
   endforeach(LIB)
 
-  set(WRITE_OUT "${WRITE_OUT}\n${LOCAL_WO}" PARENT_SCOPE)
+  set(WRITE_OUT "${WRITE_OUT}\n${LOCAL_WO}")
+
+  file(APPEND ${CMAKE_BINARY_DIR}/linkings.yml ${WRITE_OUT})
 
 endfunction(esrocos_add_dependency)
-
-
-function(esrocos_install_dependency_info)
-
-  message(${WRITE_OUT})
-
-  file(WRITE ${CMAKE_BINARY_DIR}/linkings.yml ${WRITE_OUT})
-
-  install(FILES ${CMAKE_BINARY_DIR}/linkings.yml
-  DESTINATION ${CMAKE_SOURCE_DIR}/)
-
-endfunction(esrocos_install_dependency_info)	
 
 # CMake function to build an ASN.1 types package in ESROCOS
 #
@@ -298,4 +310,3 @@ function(esrocos_pkgconfig_dependency TAR)
         endif()
     endforeach()
 endfunction(esrocos_pkgconfig_dependency)
-
