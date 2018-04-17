@@ -19,8 +19,9 @@
 #  $History$
 # ======================================================================
 
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.2)
 find_package (esrocos)
 set(ROCK_TEST_ENABLED OFF)
 esrocos_init(@PROJECT@ @VERSION@)
 esrocos_standard_layout()
+
