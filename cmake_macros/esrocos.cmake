@@ -30,25 +30,25 @@ function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
 
 endfunction(esrocos_export_function)
 
-function(esrocos_export_pkg-config_info)
+function(esrocos_export_pkgconfig)
   set(oneValueArgs DESCRIPTION VERSION)
   set(multiValueArgs REQUIRES LIBS STATIC_LIBS CFLAGS)
 
-  cmake_parse_arguments(MY_INSTALL "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  cmake_parse_arguments(esrocos_export_pkgconfig "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   SET(PROJECT_NAME ${CMAKE_PROJECT_NAME})
-  SET(PKG_CONFIG_REQUIRES ${esrocos_export_pkg-config_info_REQUIRE})
-  SET(DESCRIPTION ${esrocos_export_pkg-config_info_DESCRIPTION})
-  SET(VERSION ${esrocos_export_pkg-config_info_VERSION})
-  SET(PKG_CONFIG_CFLAGS ${esrocos_export_pkg-config_info_CFLAGS})
-  SET(PKG_CONFIG_LIBS ${esrocos_export_pkg-config_info_LIBS})
-  SET(PKG_CONFIG_LIBS_STATIC ${esrocos_export_pkg-config_info_STATIC_LIBS})
+  SET(PKG_CONFIG_REQUIRES ${esrocos_export_pkgconfig_REQUIRES})
+  SET(VERSION ${esrocos_export_pkgconfig_VERSION})
+  SET(DESCRIPTION ${esrocos_export_pkgconfig_DESCRIPTION})
+  SET(PKG_CONFIG_CFLAGS ${esrocos_export_pkgconfig_CFLAGS})
+  SET(PKG_CONFIG_LIBS ${esrocos_export_pkgconfig_LIBS})
+  SET(PKG_CONFIG_LIBS_STATIC ${esrocos_export_pkgconfig_STATIC_LIBS})
 
   CONFIGURE_FILE(
     "${CMAKE_INSTALL_PREFIX}/templates/pkg-config-template.pc.in"
     "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/${CMAKE_PROJECT_NAME}.pc"
   )
-endfunction(esrocos_export_pkg-config_info)
+endfunction(esrocos_export_pkgconfig)
 
 function(esrocos_build_project)
 
