@@ -325,3 +325,11 @@ function(esrocos_pkgconfig_dependency TAR)
         endif()
     endforeach()
 endfunction(esrocos_pkgconfig_dependency)
+
+
+# Install a symlink
+macro(install_symlink filepath sympath)
+    install(CODE "message(\"-- Creating symlink: ${sympath} -> ${filepath}\")")
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${filepath} ${sympath})")
+endmacro(install_symlink)
+
