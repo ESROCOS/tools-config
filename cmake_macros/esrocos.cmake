@@ -188,15 +188,13 @@ function(esrocos_asn1_types_package NAME)
     # List of .asn files to be compiled: local + imported
     list(APPEND ASN1_FILES ${ASN1_LOCAL} ${ASN1_IMPORTS})
 
-    # Directory to write the output of the ASN.1 compiler (C files)
-    file(MAKE_DIRECTORY ${ASN1_OUT_DIR})
-
     # Timestamp file
     set(${NAME}_timestamp ${CMAKE_CURRENT_BINARY_DIR}/timestamp)
 
     # First compilation, needed to build the lists of C files
     if(NOT EXISTS ${NAME}_timestamp)
         execute_process(
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${ASN1_OUT_DIR}
             COMMAND mono $ENV{HOME}/tool-inst/share/asn1scc/asn1.exe -c -typePrefix asn1Scc -uPER -wordSize 8 -ACN -o ${ASN1_OUT_DIR} -atc ${ASN1_FILES}
             RESULT_VARIABLE ASN1SCC_RESULT
         )
@@ -214,6 +212,7 @@ function(esrocos_asn1_types_package NAME)
 
     # Command for C compilation; creates timestamp file
     add_custom_command(OUTPUT ${NAME}_timestamp
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${ASN1_OUT_DIR}
         COMMAND mono $ENV{HOME}/tool-inst/share/asn1scc/asn1.exe -c -typePrefix asn1Scc -uPER -wordSize 8 -ACN -o ${ASN1_OUT_DIR} -atc ${ASN1_FILES}
         COMMAND ${CMAKE_COMMAND} -E touch ${NAME}_timestamp
         DEPENDS ${ASN1_FILES}
