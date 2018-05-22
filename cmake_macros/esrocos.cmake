@@ -471,7 +471,7 @@ function(esrocos_build_taste COMPONENT)
     )
     
     # Target to build and prepare export
-    add_custom_target(${COMPONENT}
+    add_custom_target(${COMPONENT} ALL
         DEPENDS ${BINARIES} export/interfaceview.aadl
     )
 
