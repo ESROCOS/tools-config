@@ -159,6 +159,8 @@ function(esrocos_asn1_types_package NAME)
     # Process optional arguments
     set(MODE "ASN1")
     set(ASN1_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${NAME}")
+    set(ASN1_COMPILER "$ENV{HOME}/tool-inst/share/asn1scc/asn1.exe" CACHE STRING "ASN compiler location")
+    set(ASN1_PREFIX "asn1Scc" CACHE STRING "ASN type prefix")
     foreach(ARG ${ARGN})
         if(ARG STREQUAL "ASN1")
             # Set next argument mode to ASN1 file
@@ -204,7 +206,7 @@ function(esrocos_asn1_types_package NAME)
     if(NOT EXISTS ${NAME}_timestamp)
         execute_process(
             COMMAND ${CMAKE_COMMAND} -E make_directory ${ASN1_OUT_DIR}
-            COMMAND mono $ENV{HOME}/tool-inst/share/asn1scc/asn1.exe -c -typePrefix asn1Scc -uPER -wordSize 8 -ACN -o ${ASN1_OUT_DIR} -atc ${ASN1_FILES}
+            COMMAND mono ${ASN1_COMPILER} -c -typePrefix ${ASN1_PREFIX} -uPER -wordSize 8 -ACN -o ${ASN1_OUT_DIR} -atc ${ASN1_FILES}
             RESULT_VARIABLE ASN1SCC_RESULT
         )
 
@@ -222,7 +224,7 @@ function(esrocos_asn1_types_package NAME)
     # Command for C compilation; creates timestamp file
     add_custom_command(OUTPUT ${NAME}_timestamp
         COMMAND ${CMAKE_COMMAND} -E make_directory ${ASN1_OUT_DIR}
-        COMMAND mono $ENV{HOME}/tool-inst/share/asn1scc/asn1.exe -c -typePrefix asn1Scc -uPER -wordSize 8 -ACN -o ${ASN1_OUT_DIR} -atc ${ASN1_FILES}
+        COMMAND mono ${ASN1_COMPILER} -c -typePrefix ${ASN1_PREFIX} -uPER -wordSize 8 -ACN -o ${ASN1_OUT_DIR} -atc ${ASN1_FILES}
         COMMAND ${CMAKE_COMMAND} -E touch ${NAME}_timestamp
         DEPENDS ${ASN1_FILES}
         COMMENT "Generate header files for: ${ASN1_IMPORTS} ${ASN1_FILES} in ${ASN1_OUT_DIR}"
