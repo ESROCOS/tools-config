@@ -448,7 +448,9 @@ function(esrocos_build_taste COMPONENT)
     # Copy model to build directory
     file(GLOB AADL "*.aadl")
     file(GLOB AADL_EXCLUDE "__*.aadl")
-    list(REMOVE_ITEM AADL ${AADL_EXCLUDE})
+    if(AADL_EXCLUDE)
+        list(REMOVE_ITEM AADL ${AADL_EXCLUDE})
+    endif()
     file(GLOB USER "user_init_*.sh")
     file(COPY ${AADL} ${USER} build-script.sh DESTINATION .)
     foreach(S ${SOURCES})
@@ -478,7 +480,7 @@ function(esrocos_build_taste COMPONENT)
     # Install export files
     set(ZIPS "")
     foreach(S ${SOURCES})
-        list(APPEND ZIPS ${S}.zip)
+        list(APPEND ZIPS ${CMAKE_CURRENT_BINARY_DIR}/${S}.zip)
     endforeach()
     
     set(ESROCOS_COMPONENT ${CMAKE_INSTALL_PREFIX}/share/taste_components/${COMPONENT})
@@ -486,7 +488,7 @@ function(esrocos_build_taste COMPONENT)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/DataView.aadl
         ${CMAKE_CURRENT_BINARY_DIR}/export/interfaceview.aadl
-        ${CMAKE_CURRENT_BINARY_DIR}/${ZIPS}
+        ${ZIPS}
         ${USER}
         DESTINATION
         ${ESROCOS_COMPONENT}
