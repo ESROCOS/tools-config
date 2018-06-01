@@ -387,6 +387,47 @@ function(esrocos_preinstall_files TAR DEST)
 endfunction(esrocos_preinstall_files)
 
 
+# CMAKE function to install a directory in the ESROCOS install folder.
+#
+# Preinstalling a directory may be needed to build a TASTE model with
+# autoproj (see esrocos_preinstall_files).
+#
+# Usage:
+#   esrocos_preinstall_directories(<target> <dest_dir> <directories...>)
+# 
+# Creates <target> that copies <directories...> to <dest_dir>, where
+# <dest_dir> is relative to the CMAKE_INSTALL_PREFIX.
+#
+function(esrocos_preinstall_directories TAR DEST)
+
+    set(FULLDEST ${CMAKE_INSTALL_PREFIX}/${DEST})
+
+    set(SOURCES "")
+    set(DESTINATIONS "")
+    foreach(f ${ARGN})
+        get_filename_component(barename ${f} NAME)
+        if(IS_ABSOLUTE ${f})
+            list(APPEND SOURCES ${f})
+        else()
+            list(APPEND SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/${f})
+        endif()
+        list(APPEND DESTINATIONS ${FULLDEST}/${barename})
+    endforeach()
+
+
+    add_custom_command(OUTPUT ${DESTINATIONS}
+        DEPENDS ${SOURCES}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${FULLDEST}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCES} ${FULLDEST}
+        COMMENT "Preinstalling ${ARGN} in ${DEST}"
+    )
+
+    add_custom_target(${TAR} DEPENDS ${DESTINATIONS})
+
+endfunction(esrocos_preinstall_directories)
+
+
 # CMake function to build a TASTE model.
 #
 # Usage:
