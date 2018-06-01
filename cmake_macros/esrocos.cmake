@@ -390,15 +390,16 @@ endfunction(esrocos_preinstall_files)
 # CMake function to build a TASTE model.
 #
 # Usage:
-#   esrocos_build_taste(<component_name> SOURCES <src_dirs> OUTPUT <binaries>)
+#   esrocos_build_taste(<component_name> SOURCES <src_dirs> OUTPUT <binaries> DEPENDS <other_targets>)
 #
 # where:
 #   <component_name> is the name of the TASTE component to be exported
 #   (it will contain all the functions in the IV),
 #   <src_dirs> are the names of the directories containing the 
-#   function implementations, and
+#   function implementations, 
 #   <binaries> are the paths of the expected binaries to be generated
-#   (this is needed to ensure that the model is built successfully).
+#   (this is needed to ensure that the model is built successfully), and
+#   <other_targets> are dependencies requried by the component.
 #
 # The function creates a target named <component_name>.
 #
@@ -418,6 +419,7 @@ function(esrocos_build_taste COMPONENT)
     # Parse arguments
     set(SOURCES "")
     set(BINARIES "")
+    set(DEPENDENCIES "")
     set(MODE "NONE")
     foreach(ARG ${ARGN})
         if(ARG STREQUAL "SOURCES")
@@ -426,12 +428,16 @@ function(esrocos_build_taste COMPONENT)
         elseif(ARG STREQUAL "BINARIES")
             # Set next argument mode to expected binaries
             set(MODE "BINARIES")
+        elseif(ARG STREQUAL "DEPENDS")
+            set(MODE "DEPENDS")
         else()
             # File or package name
             if(MODE STREQUAL "SOURCES")
                 list(APPEND SOURCES ${ARG})
             elseif(MODE STREQUAL "BINARIES")
                 list(APPEND BINARIES ${ARG})
+            elseif(MODE STREQUAL "DEPENDS")
+                list(APPEND DEPENDENCIES ${ARG})
             else()
                 # Unexpected mode
                 message(FATAL_ERROR "esrocos_build_taste(${NAME}): unexpected argument.")
@@ -474,7 +480,10 @@ function(esrocos_build_taste COMPONENT)
     
     # Target to build and prepare export
     add_custom_target(${COMPONENT} ALL
-        DEPENDS ${BINARIES} export/interfaceview.aadl
+        DEPENDS 
+        ${DEPENDENCIES}
+        ${BINARIES} 
+        export/interfaceview.aadl
     )
 
     # Install export files
