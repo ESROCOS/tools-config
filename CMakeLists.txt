@@ -14,7 +14,4 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/cmake_macros/
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/cmake_toolchains/
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake_toolchains/)
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/autoproj/
-	DESTINATION ${CMAKE_INSTALL_PREFIX}/autoproj/)
-
 message(STATUS "installed tools")
