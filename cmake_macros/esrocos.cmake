@@ -89,14 +89,17 @@ function(esrocos_add_dependency)
   set(LOCAL_LIBS_WO "${esrocos_add_dependency_PARTITION}:")
   set(LOCAL_INCL_WO "${esrocos_add_dependency_PARTITION}:")
   
-  foreach(MODULE ${esrocos_add_dependency_MODULES})
 
-    pkg_check_modules(INFO REQUIRED ${MODULE})
+  foreach(MODULE ${esrocos_add_dependency_MODULES}) 
+    
+    
+    pkg_check_modules(${MODULE}_INFO REQUIRED ${MODULE})
+     
 
-    foreach(LIB ${INFO_STATIC_LIBRARIES})
-   
+    foreach(LIB ${${MODULE}_INFO_STATIC_LIBRARIES})
+
       set(NOT_INCLUDED TRUE)
-      foreach(DIR ${LINK_LIBS_STATIC_LIBRARY_DIRS})
+      foreach(DIR ${${MODULE}_INFO_STATIC_LIBRARY_DIRS})
         if(EXISTS "${DIR}/lib${LIB}.a") 
           set(LOCAL_LIBS_WO "${LOCAL_LIBS_WO}\n- ${DIR}/lib${LIB}.a")
           set(NOT_INCLUDED FALSE)
@@ -115,11 +118,15 @@ function(esrocos_add_dependency)
       endif()
     endforeach(LIB)
     
-    foreach(INCLUDE ${INFO_STATIC_INCLUDE_DIRS})
-      set(LOCAL_INCL_WO "${LOCAL_INCL_WO}\n- $INCLUDE}")
-    endforeach(INCLUDE)
-    
+    foreach(C_FLAG ${${MODULE}_INFO_INCLUDE_DIRS})
+   
+      set(LOCAL_INCL_WO "${LOCAL_INCL_WO}\n- ${C_FLAG}")
+    endforeach(C_FLAG)
+   
   endforeach(MODULE)
+
+  set(LOCAL_LIBS_WO "${LOCAL_LIBS_WO}\n" )
+  set(LOCAL_INCL_WO "${LOCAL_INCL_WO}\n" )
 
   file(APPEND ${CMAKE_BINARY_DIR}/includes.yml ${LOCAL_INCL_WO})
   file(APPEND ${CMAKE_BINARY_DIR}/linkings.yml ${LOCAL_LIBS_WO})
