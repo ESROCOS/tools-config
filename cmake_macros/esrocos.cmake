@@ -239,7 +239,7 @@ function(esrocos_asn1_types_package NAME)
     
     # Get the types .c files, excluding common and test cases
     foreach(F ${C_FILES})
-        if (NOT ${F} MATCHES "testsuite.c|mainprogram.c|.*_auto_tcs\\.c")
+        if (NOT ${F} MATCHES "test_case_.*|testsuite.c|mainprogram.c|.*_auto_tcs\\.c")
             list(APPEND C_SOURCES ${F})
         endif()
     endforeach()
@@ -254,6 +254,7 @@ function(esrocos_asn1_types_package NAME)
     message(STATUS "set cache variable ${NAME}_C_SOURCES")
     message(STATUS "set cache variable ${NAME}_TEST_SOURCES")
     message(STATUS "set cache variable ${NAME}_INCLUDE_DIR")
+    
 
 endfunction(esrocos_asn1_types_package)
 
