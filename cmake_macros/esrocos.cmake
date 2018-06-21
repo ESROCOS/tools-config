@@ -239,7 +239,7 @@ function(esrocos_asn1_types_package NAME)
     
     # Get the types .c files, excluding common and test cases
     foreach(F ${C_FILES})
-        if (NOT ${F} MATCHES "testsuite.c|mainprogram.c|.*_auto_tcs\\.c")
+        if (NOT ${F} MATCHES "testsuite\\.c|mainprogram\\.c|.*_auto_tcs\\.c|test_case_.*\\.c")
             list(APPEND C_SOURCES ${F})
         endif()
     endforeach()
