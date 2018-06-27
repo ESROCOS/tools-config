@@ -8,7 +8,8 @@ macro(esrocos_init)
   set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/")
 
   file(WRITE ${CMAKE_BINARY_DIR}/linkings.yml "")
-
+  file(WRITE ${CMAKE_BINARY_DIR}/includes.yml "")
+  
   # PkgConfig
   INCLUDE(FindPkgConfig)
  
@@ -31,7 +32,7 @@ endmacro(esrocos_init)
 function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
 
   add_custom_target(create_install_dir ALL 
-                  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
+                   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
   add_custom_target(create_zip ALL
                   COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/${FUNCTION_DIR}.zip" "--format=zip" "${FUNCTION_DIR}"
 		  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -50,7 +51,7 @@ function(esrocos_export_pkgconfig)
   cmake_parse_arguments(esrocos_export_pkgconfig "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   SET(PROJECT_NAME ${CMAKE_PROJECT_NAME})
-  SET(PKG_CONFIG_REQUIRES ${esrocos_export_pkgconfig_REQUIRES})
+  SET(PKG_CONFIG_REQUIRES "${esrocos_export_pkgconfig_REQUIRES}")
   SET(VERSION ${esrocos_export_pkgconfig_VERSION})
   SET(DESCRIPTION ${esrocos_export_pkgconfig_DESCRIPTION})
   SET(PKG_CONFIG_CFLAGS ${esrocos_export_pkgconfig_CFLAGS})
@@ -73,10 +74,10 @@ add_custom_command(
     TARGET ESROCOS_BUILD_PROJECT 
     POST_BUILD
     COMMAND ${CMAKE_COMMAND}
-    ARGS -P ${CMAKE_INSTALL_PREFIX}/cmake_macros/build_project.cmake
+    ARGS
+    -P ${CMAKE_INSTALL_PREFIX}/cmake_macros/build_project.cmake
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
-
 
 endfunction(esrocos_build_project)
  
@@ -86,36 +87,30 @@ function(esrocos_add_dependency)
 
   cmake_parse_arguments(esrocos_add_dependency "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-  set(LOCAL_WO "${esrocos_add_dependency_PARTITION}:")
-  
-  foreach(MODULE ${esrocos_add_dependency_MODULES})
 
-    pkg_check_modules(LINK_LIBS REQUIRED ${MODULE})
+  add_custom_target(${esrocos_add_dependency_PARTITION}_deps ALL)
 
-    foreach(LIB ${LINK_LIBS_STATIC_LIBRARIES})
-   
-      set(NOT_INCLUDED TRUE)
-      foreach(DIR ${LINK_LIBS_STATIC_LIBRARY_DIRS})
-        if(EXISTS "${DIR}/lib${LIB}.a") 
-          set(LOCAL_WO "${LOCAL_WO}\n- ${DIR}/lib${LIB}.a")
-          set(NOT_INCLUDED FALSE)
-        elseif(EXISTS "${DIR}/lib${LIB}.so") 
-          set(LOCAL_WO "${LOCAL_WO}\n- ${DIR}/lib${LIB}.so")
-          set(NOT_INCLUDED FALSE)
-        endif()   
-      endforeach(DIR)
+  add_dependencies(${esrocos_add_dependency_PARTITION}_deps init_esrocos)
 
-      if(${NOT_INCLUDED})
-        find_library(FOUND ${LIB})
-        if(EXISTS ${FOUND})
-          set(LOCAL_WO "${LOCAL_WO}\n- ${FOUND}" )
-        endif()
-        unset (FOUND CACHE)
-      endif()
-    endforeach(LIB)
-  endforeach(MODULE)
+  add_custom_command( 
+    TARGET ${esrocos_add_dependency_PARTITION}_deps
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} 
+    ARGS
+      -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+      -D CMAKE_FIND_LIBRARY_PREFIXES=${CMAKE_FIND_LIBRARY_PREFIXES}
+      -D CMAKE_FIND_LIBRARY_SUFFIXES=${CMAKE_FIND_LIBRARY_SUFFIXES}
 
-  file(APPEND ${CMAKE_BINARY_DIR}/linkings.yml ${LOCAL_WO})
+      -D CMAKE_SYSTEM_PREFIX_PATH="${CMAKE_SYSTEM_PREFIX_PATH}"  
+      -D CMAKE_LIBRARY_ARCHITECTURE=${CMAKE_LIBRARY_ARCHITECTURE}
+      
+      -D PARTITION=${esrocos_add_dependency_PARTITION}  
+      -D MODULES="${esrocos_add_dependency_MODULES}" 
+
+      -P ${CMAKE_INSTALL_PREFIX}/cmake_macros/add_dependencies.cmake
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    USES_TERMINAL
+   )
 
 endfunction(esrocos_add_dependency)
 
