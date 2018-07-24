@@ -30,13 +30,13 @@ macro(esrocos_init)
 endmacro(esrocos_init)
 
 function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
-
-  add_custom_target(create_install_dir ALL 
+  string(TOLOWER ${FUNCTION_DIR} FUNCTION_DIR_LC)
+  add_custom_target(create_install_dir_${FUNCTION_DIR} ALL 
                    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
-  add_custom_target(create_zip ALL
-                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/${FUNCTION_DIR}.zip" "--format=zip" "${FUNCTION_DIR}"
+  add_custom_target(create_zip_${FUNCTION_DIR} ALL
+                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/${FUNCTION_DIR}.zip" "--format=zip" "${FUNCTION_DIR_LC}"
 		  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                  DEPENDS create_install_dir)
+                  DEPENDS create_install_dir_${FUNCTION_DIR})
 
   install(FILES ${CMAKE_BINARY_DIR}/${FUNCTION_DIR}.zip
                 ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
