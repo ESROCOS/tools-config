@@ -50,8 +50,11 @@ function(esrocos_export_pkgconfig)
 
   cmake_parse_arguments(esrocos_export_pkgconfig "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
+  string(REPLACE ";" " " REQUIRED_MODULES  "${esrocos_export_pkgconfig_REQUIRES}")
+
+
   SET(PROJECT_NAME ${CMAKE_PROJECT_NAME})
-  SET(PKG_CONFIG_REQUIRES "${esrocos_export_pkgconfig_REQUIRES}")
+  SET(PKG_CONFIG_REQUIRES ${REQUIRED_MODULES})
   SET(VERSION ${esrocos_export_pkgconfig_VERSION})
   SET(DESCRIPTION ${esrocos_export_pkgconfig_DESCRIPTION})
   SET(PKG_CONFIG_CFLAGS ${esrocos_export_pkgconfig_CFLAGS})
