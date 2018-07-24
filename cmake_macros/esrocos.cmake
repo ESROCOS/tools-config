@@ -34,11 +34,11 @@ function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
   add_custom_target(create_install_dir_${FUNCTION_DIR} ALL 
                    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
   add_custom_target(create_zip_${FUNCTION_DIR} ALL
-                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/${FUNCTION_DIR}.zip" "--format=zip" "${FUNCTION_DIR_LC}"
+                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/${FUNCTION_DIR_LC}.zip" "--format=zip" "${FUNCTION_DIR_LC}"
 		  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                   DEPENDS create_install_dir_${FUNCTION_DIR})
 
-  install(FILES ${CMAKE_BINARY_DIR}/${FUNCTION_DIR}.zip
+  install(FILES ${CMAKE_BINARY_DIR}/${FUNCTION_DIR_LC}.zip
                 ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
           DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
 
