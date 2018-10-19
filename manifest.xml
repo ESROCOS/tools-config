@@ -2,5 +2,6 @@
     <description brief="ESROCOS command line tools">
         templates and environment variables for esrocos
     </description>
-    <author>Benjamin Kisliuk</author>
+    <author>DFKI GmbH</author>
+    <license>BSD 3-Clause</license>
 </package>
