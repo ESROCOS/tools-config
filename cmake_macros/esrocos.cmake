@@ -159,6 +159,7 @@ function(esrocos_asn1_types_package NAME)
     # Process optional arguments
     set(MODE "ASN1")
     set(ASN1_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${NAME}")
+    file(MAKE_DIRECTORY ${ASN1_OUT_DIR})
     set(ASN1_COMPILER "$ENV{HOME}/tool-inst/share/asn1scc/asn1.exe" CACHE STRING "ASN compiler location")
     set(ASN1_PREFIX "asn1Scc" CACHE STRING "ASN type prefix")
     foreach(ARG ${ARGN})
