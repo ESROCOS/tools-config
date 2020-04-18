@@ -183,6 +183,7 @@ function(esrocos_asn1_types_package NAME)
             elseif(MODE STREQUAL "OUTDIR")
                 # Add imported package
                 set(ASN1_OUT_DIR "${ARG}")
+                file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/${ARG}")
             else()
                 # Unexpected mode
                 message(FATAL_ERROR "Internal error at esrocos_asn1_types_package(${NAME}): wrong mode ${MODE}.")
