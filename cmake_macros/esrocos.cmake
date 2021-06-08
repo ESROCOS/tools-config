@@ -34,11 +34,11 @@ function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
   add_custom_target(create_install_dir_${FUNCTION_DIR} ALL 
                    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
   add_custom_target(create_zip_${FUNCTION_DIR} ALL
-                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/${FUNCTION_DIR_LC}.zip" "--format=zip" "${FUNCTION_DIR_LC}"
+                  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/work/${FUNCTION_DIR_LC}.zip" "--format=zip" "work/${FUNCTION_DIR_LC}"
 		  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                   DEPENDS create_install_dir_${FUNCTION_DIR})
 
-  install(FILES ${CMAKE_BINARY_DIR}/${FUNCTION_DIR_LC}.zip
+  install(FILES ${CMAKE_BINARY_DIR}/work/${FUNCTION_DIR_LC}.zip
                 ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
           DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
 
@@ -455,7 +455,6 @@ endfunction(esrocos_preinstall_directories)
 # set to "<lowercase_function_name>.zip".
 #
 function(esrocos_build_taste COMPONENT)
-
     # Parse arguments
     set(SOURCES "")
     set(BINARIES "")
@@ -491,23 +490,30 @@ function(esrocos_build_taste COMPONENT)
         message(FATAL_ERROR "esrocos_build_taste(${NAME}): no BINARIES specified.")
     endif() 
     
-    # Copy model to build directory
+    
+    # Copy model and creation of zips to build directory
     file(GLOB AADL "*.aadl")
     file(GLOB AADL_EXCLUDE "__*.aadl")
     if(AADL_EXCLUDE)
         list(REMOVE_ITEM AADL ${AADL_EXCLUDE})
     endif()
-    file(GLOB USER "*.sh")
-    file(COPY ${AADL} ${USER} build-script.sh DESTINATION .)
+    #file(GLOB USER "*.sh")
+    file(COPY ${AADL} update_data_view.sh Makefile DESTINATION .)
     foreach(S ${SOURCES})
-        file(COPY ${S} DESTINATION .)
+        file(COPY work/${S} DESTINATION work)
+        execute_process(COMMAND "zip" "-r" "model/${S}.zip" "${CMAKE_BINARY_DIR}/model/work/${S}"
+        RESULT_VARIABLE zip_result
+        OUTPUT_VARIABLE zip_ver)
+        message(STATUS "zip ver[${zip_result}]: ${zip_ver}")
     endforeach()
+    
 
     # Command to run the build script
     add_custom_command(OUTPUT ${BINARIES}
-        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/build-script.sh
-        DEPENDS ${SOURCES} ${AADL} ${USER}
-        COMMENT "Run build-script.sh for ${COMPONENT}"
+        COMMAND cd ${CMAKE_CURRENT_BINARY_DIR};
+        COMMAND ./update_data_view.sh;make
+        #DEPENDS ${SOURCES} ${AADL} ${USER}
+        COMMENT "Run make for ${COMPONENT}"
     )
 
     # Prepare Interface View for component export
