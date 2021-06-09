@@ -501,7 +501,7 @@ function(esrocos_build_taste COMPONENT)
     file(COPY ${AADL} update_data_view.sh Makefile DESTINATION .)
     foreach(S ${SOURCES})
         file(COPY work/${S} DESTINATION work)
-        execute_process(COMMAND "zip" "-r" "model/${S}.zip" "${CMAKE_BINARY_DIR}/model/work/${S}"
+        execute_process(COMMAND "zip" "-r" "${CMAKE_CURRENT_BINARY_DIR}/${S}.zip" "${CMAKE_CURRENT_BINARY_DIR}/work/${S}"
         RESULT_VARIABLE zip_result
         OUTPUT_VARIABLE zip_ver)
         message(STATUS "zip ver[${zip_result}]: ${zip_ver}")
