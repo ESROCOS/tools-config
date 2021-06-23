@@ -40,6 +40,8 @@ function(esrocos_export_function FUNCTION_DIR INSTALL_DIR)
 
   install(FILES ${CMAKE_BINARY_DIR}/work/${FUNCTION_DIR_LC}.zip
                 ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}_iv.aadl
+                ${CMAKE_BINARY_DIR}/update_data_view.sh
+                ${CMAKE_BINARY_DIR}/Makefile
           DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR})
 
 endfunction(esrocos_export_function)
@@ -543,6 +545,8 @@ function(esrocos_build_taste COMPONENT)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/DataView.aadl
         ${CMAKE_CURRENT_BINARY_DIR}/export/interfaceview.aadl
+        ${CMAKE_CURRENT_BINARY_DIR}/update_data_view.sh
+        ${CMAKE_CURRENT_BINARY_DIR}/Makefile
         ${ZIPS}
         ${USER}
         DESTINATION
